@@ -1,25 +1,45 @@
-import logo from './logo.svg';
+import React from 'react';
 import './App.css';
+import { getPassage } from './aeneid-api.js';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      line: '',
+
+    };
+  }
+
+  handleClick(version) {
+    getPassage(version).then(result => this.setState({
+      line: result
+    }));
+  }
+
+  divine(language) {
+    getPassage('latin').then(result => this.setState({
+      line: result,
+    }));
+  }
+  render() {
+    return (
+      <div id="page">
+        <div id="divination">
+        { this.state.line }
+        </div>
+        <div id="container">
+          <div className="language" onClick={() => this.handleClick('latin')}>
+            Latin
+          </div>
+          <div className="language" onClick={() => this.handleClick('dryden')}>
+            Dryden
+          </div>
+        </div>
+      </div>
+    )
+  }
 }
 
 export default App;
