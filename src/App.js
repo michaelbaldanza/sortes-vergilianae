@@ -7,6 +7,7 @@ import Page from './components/Page/Page';
 
 const api = 'http://api.aeneid.eu/versions/'
 
+
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -30,12 +31,13 @@ class App extends React.Component {
       await fetch(url + '/' + lineStr)
         .then((res => res.json()))
         .then(lineObj => {
+          console.log(lineObj)
           console.log(lineObj.line)
           lineArr.push(lineObj);
         })
       await sleep(1001);
     }
-    this.setState({lines: lineArr});
+    this.setState({lines: lineArr, version: version});
   }
 
   divine(language) {
@@ -50,37 +52,64 @@ class App extends React.Component {
 
   render() {
     const lines = this.state.lines;
-    if (lines) return (
-      <div id="page">
-        <div id="button-container">
-          <div className="language" onClick={() => this.handleClick('latin')}>
-            Latin
+    const roNum = [
+      null, 'I', 'II', 'III', 'IV', 'V', 'VI',
+      'VII', 'VIII', 'IX', 'X', 'XI', 'XII'
+    ];
+    if (lines) {
+      const bookNum = roNum[lines[0].book];
+      const firstLine = lines[0].line.toString();
+      const lastLine = lines[lines.length - 1].line.toString();
+      const citation =  bookNum + '.' + firstLine + '-' + lastLine;
+      return (
+        <div id="webpage">
+          <header>
+            <h1>
+              <span className="header-word">S O R T E S</span><span className="header-word">V E R G I L I A N A E</span>
+            </h1>
+          </header>
+          <div id="page">
+            <div id="divination">
+              {
+                lines.map((l) => (
+                  <Line poetry={l} key={l.book.toString() + 'x' + l.line.toString()} />
+                ))
+              }
+              <div id="citation">
+                {citation}
+              </div>
+            </div>
           </div>
-          <div className="language" onClick={() => this.handleClick('dryden')}>
-            Dryden
-          </div>
+          <div id="button-container">
+              <button className="language" onClick={() => this.handleClick('latin')}>
+                Latin
+              </button>
+              <button className="language" onClick={() => this.handleClick('dryden')}>
+                Dryden
+              </button>
+            </div>
         </div>
-        <div id="divination">
-          {
-            lines.map((line) => (
-              <Line line={line} />
-            ))
-          }
-        </div>
-      </div>
-    )
+      )
+    }
     return (
-      <div id="page">
-        <div id="button-container">
-          <div className="language" onClick={() => this.handleClick('latin')}>
-            Latin
-          </div>
-          <div className="language" onClick={() => this.handleClick('dryden')}>
-            Dryden
-          </div>
+      <div id="webpage">
+        <header>
+          <h1>
+            <span className="header-word">S O R T E S</span><span className="header-word">V E R G I L I A N A E</span>
+          </h1>
+        </header>
+        <div id="page">
+          <table id="divination">
+            {lines}
+          </table>
         </div>
-        <div id="divination">
-          {lines}
+        <div id="button-container">
+          <button className="language" onClick={() => this.handleClick('latin')}>
+            Latin
+          </button>
+          <button className="language" onClick={() => this.handleClick('dryden')}>
+            Dryden
+          </button>
         </div>
       </div>
     )
