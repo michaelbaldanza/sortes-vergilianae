@@ -13,11 +13,13 @@ class App extends React.Component {
     super(props);
 
     this.state = {
+      loading: false,
       lines: null,
     };
   }
 
   async handleClick(version) {
+    this.setState({loading: !this.state.loading})
     const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
     let nextLine;
     const lineArr = [];
@@ -37,7 +39,7 @@ class App extends React.Component {
         })
       await sleep(1001);
     }
-    this.setState({lines: lineArr, version: version});
+    this.setState({lines: lineArr, loading: !this.state.loading});
   }
 
   divine(language) {
@@ -51,46 +53,6 @@ class App extends React.Component {
   }
 
   render() {
-    const lines = this.state.lines;
-    const roNum = [
-      null, 'I', 'II', 'III', 'IV', 'V', 'VI',
-      'VII', 'VIII', 'IX', 'X', 'XI', 'XII'
-    ];
-    if (lines) {
-      const bookNum = roNum[lines[0].book];
-      const firstLine = lines[0].line.toString();
-      const lastLine = lines[lines.length - 1].line.toString();
-      const citation =  bookNum + '.' + firstLine + '-' + lastLine;
-      return (
-        <div id="webpage">
-          <header>
-            <h1>
-              <span className="header-word">S O R T E S</span><span className="header-word">V E R G I L I A N A E</span>
-            </h1>
-          </header>
-          <div id="page">
-            <div id="divination">
-              {
-                lines.map((l) => (
-                  <Line poetry={l} key={l.book.toString() + 'x' + l.line.toString()} />
-                ))
-              }
-              <div id="citation">
-                {citation}
-              </div>
-            </div>
-          </div>
-          <div id="button-container">
-              <button className="language" onClick={() => this.handleClick('latin')}>
-                Latin
-              </button>
-              <button className="language" onClick={() => this.handleClick('dryden')}>
-                Dryden
-              </button>
-            </div>
-        </div>
-      )
-    }
     return (
       <div id="webpage">
         <header>
@@ -98,19 +60,15 @@ class App extends React.Component {
             <span className="header-word">S O R T E S</span><span className="header-word">V E R G I L I A N A E</span>
           </h1>
         </header>
-        <div id="page">
-          <table id="divination">
-            {lines}
-          </table>
-        </div>
+        <Page loading={this.state.loading} lines={this.state.lines}/>
         <div id="button-container">
-          <button className="language" onClick={() => this.handleClick('latin')}>
-            Latin
-          </button>
-          <button className="language" onClick={() => this.handleClick('dryden')}>
-            Dryden
-          </button>
-        </div>
+            <button className="language" onClick={() => this.handleClick('latin')}>
+              Latin
+            </button>
+            <button className="language" onClick={() => this.handleClick('dryden')}>
+              Dryden
+            </button>
+          </div>
       </div>
     )
   }
